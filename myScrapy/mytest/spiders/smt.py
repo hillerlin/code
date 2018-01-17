@@ -32,9 +32,20 @@ class smt(scrapy.Spider):
                                callback=self.logged_in)
 
      def logged_in(self, response):
-          f = open("body.txt",'a')
-          f.write(response.body+'\n')
-          f.close()
+
+         # //*[@id="j-product-info-sku"]
+         # //*[@id="j-sku-list-1"]
+         # //*[@id="j-sku-list-2"]
+
+          regRules={'sku':'//*[@id="j-product-info-sku"]/dl','sku_name':'//dt/text()','sku_value':'//dd/ul/li'}
+          ifSku=bool(response.selector.xpath(regRules['sku']).extract())
+          if(ifSku==True):
+              for value in response.selector.xpath(regRules['sku']).extract():
+                  skuName=Selector(text=value).xpath(regRules['sku_name']).extract()[0]
+                  #skuValue=Selector().xpath().extract()[0]
+                  f = open("body.txt",'a')
+                  f.write(str(skuName)+'\n')
+                  f.close()
 
      def parse(self,response):
          totalPage=176

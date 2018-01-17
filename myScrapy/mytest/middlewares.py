@@ -81,7 +81,7 @@ class JavaScriptMiddleware(object):
     def process_response(self,request, response, spider):
         if response.status == 200:
             print "PhantomJS is starting..."
-            driver = webdriver.PhantomJS(executable_path="D:\Python27\Tools\phantomjs-2.1.1-windows/bin\phantomjs.exe",service_args=['--disk-cache=true']) #指定使用的浏览器
+            driver = webdriver.PhantomJS(executable_path="D:\Python27\Tools\phantomjs-2.1.1-windows/bin\phantomjs.exe",service_args=['--load-images=false','--disk-cache=true']) #指定使用的浏览器
             #wait = WebDriverWait(driver, 5)
             # driver = webdriver.Firefox()
             driver.get(request.url)
