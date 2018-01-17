@@ -37,15 +37,22 @@ class smt(scrapy.Spider):
          # //*[@id="j-sku-list-1"]
          # //*[@id="j-sku-list-2"]
 
-          regRules={'sku':'//*[@id="j-product-info-sku"]/dl','sku_name':'//dt/text()','sku_value':'//dd/ul/li'}
+          regRules={'sku':'//*[@id="j-product-info-sku"]/dl','sku_name':'//dt/text()','sku_value':'//dd/ul/li','sku_a_attr':'//a/@title','sku_span_attr':'//a/span/text()','orders':'//*[@id="j-order-num"]'}
           ifSku=bool(response.selector.xpath(regRules['sku']).extract())
+          orders=re.compile('\d+').findall(Selector(text=response.body).xpath(regRules['orders']).extract()[0])[0]
+          f = open("body2.txt",'a')
           if(ifSku==True):
               for value in response.selector.xpath(regRules['sku']).extract():
+                  skuAttr=''
                   skuName=Selector(text=value).xpath(regRules['sku_name']).extract()[0]
-                  #skuValue=Selector().xpath().extract()[0]
-                  f = open("body.txt",'a')
-                  f.write(str(skuName)+'\n')
-                  f.close()
+                  for liValue in Selector(text=value).xpath(regRules['sku_value']).extract():
+                      if(bool(Selector(text=liValue).xpath(regRules['sku_a_attr']).extract())):
+                          skuAttr+=Selector(text=liValue).xpath(regRules['sku_a_attr']).extract()[0]+'----'
+                      else:
+                          skuAttr+=Selector(text=liValue).xpath(regRules['sku_span_attr']).extract()[0]+'----'
+                  f.write(str(skuName)+str(skuAttr)+orders+'\n')
+
+          f.close()
 
      def parse(self,response):
          totalPage=176
