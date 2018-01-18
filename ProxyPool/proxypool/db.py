@@ -18,6 +18,12 @@ class RedisClient(object):
         self._db.ltrim("proxies", count, -1)
         return proxies
 
+    def getAll(self):
+        return self._db.lrange("proxies",0,-1)
+
+    def delete(self,value):
+        self._db.lrem("proxies",value)
+
     def put(self, proxy):
         """
         add proxy to right top

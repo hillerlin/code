@@ -41,6 +41,9 @@ CONCURRENT_REQUESTS_PER_IP = 16
 # Disable cookies (enabled by default)
 COOKIES_ENABLED = True
 
+#日志级别
+LOG_LEVEL = 'ERROR'
+
 # Disable Telnet Console (enabled by default)
 #TELNETCONSOLE_ENABLED = False
 
@@ -82,10 +85,10 @@ ITEM_PIPELINES = {
 # MONGODB_DOCNAME = 'taobao'#表名
 
 #mysql设置
-MYSQL_HOST = '127.0.0.1'
+MYSQL_HOST = '59.110.136.193'
 MYSQL_DBNAME = 'scrapy'
 MYSQL_USER = 'root'
-MYSQL_PASSWD = ''
+MYSQL_PASSWD = 'lmj4282887'
 MYSQL_TABLE='smt'
 # Redis数据库的地址和端口
 REDIS_HOST = '59.110.136.193'

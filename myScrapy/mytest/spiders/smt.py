@@ -6,7 +6,7 @@ import urllib2
 from scrapy.http import Request
 from scrapy import Selector
 from ..items import smtconfig
-#import json
+import json
 import sys
 import chardet
 #import io
@@ -29,71 +29,25 @@ class smt(scrapy.Spider):
 
      def start_requests(self):
           yield scrapy.Request(url="https://www.aliexpress.com/item/TACVASEN-Army-Camouflage-Coat-Military-Tactical-Jacket-men-Soft-Shell-Waterproof-Windproof-Jacket-Coat-Plus-Size/32793996367.html?spm=2114.search0103.3.1.40ab65d5IjMGvZ&ws_ab_test=searchweb0_0,searchweb201602_2_10152_10151_10065_10068_10344_10342_10546_10343_10325_10340_10548_10341_10084_10083_10307_10615_10059_10314_10534_100031_10604_10103_10142,searchweb201603_6,ppcSwitch_5&algo_expid=c6742f30-ec0d-4c20-88a0-53d0abe3a23a-0&algo_pvid=c6742f30-ec0d-4c20-88a0-53d0abe3a23a&priceBeautifyAB=4",
-                               callback=self.logged_in)
+                               callback=self.page)
 
-     def logged_in(self, response):
 
-         # //*[@id="j-product-info-sku"]
-         # //*[@id="j-sku-list-1"]
-         # //*[@id="j-sku-list-2"]
 
-          regRules={'sku':'//*[@id="j-product-info-sku"]/dl','sku_name':'//dt/text()','sku_value':'//dd/ul/li','sku_a_attr':'//a/@title','sku_span_attr':'//a/span/text()','orders':'//*[@id="j-order-num"]'}
-          ifSku=bool(response.selector.xpath(regRules['sku']).extract())
-          orders=re.compile('\d+').findall(Selector(text=response.body).xpath(regRules['orders']).extract()[0])[0]
-          f = open("body2.txt",'a')
-          if(ifSku==True):
-              for value in response.selector.xpath(regRules['sku']).extract():
-                  skuAttr=''
-                  skuName=Selector(text=value).xpath(regRules['sku_name']).extract()[0]
-                  for liValue in Selector(text=value).xpath(regRules['sku_value']).extract():
-                      if(bool(Selector(text=liValue).xpath(regRules['sku_a_attr']).extract())):
-                          skuAttr+=Selector(text=liValue).xpath(regRules['sku_a_attr']).extract()[0]+'----'
-                      else:
-                          skuAttr+=Selector(text=liValue).xpath(regRules['sku_span_attr']).extract()[0]+'----'
-                  f.write(str(skuName)+str(skuAttr)+orders+'\n')
-
-          f.close()
 
      def parse(self,response):
          totalPage=176
-         # test1='window.runParams.imageBigViewURL=["https://ae01.alicdn.com/kf/HTB1cC8TSXXXXXcMaXXXq6xXFXXXW/0-2gnail-neon-aurora-pigement-Unicorn-Nail-Powder-Mermaid-Nail-Art-Chrome-Pigment-Manicure-Decorations-in.jpg","https://ae01.alicdn.com/kf/HTB1svDnh8fH8KJjy1Xbq6zLdXXaO/0-2gnail-neon-aurora-pigement-Unicorn-Nail-Powder-Mermaid-Nail-Art-Chrome-Pigment-Manicure-Decorations-in.jpg","https://ae01.alicdn.com/kf/HTB1HW3shY_I8KJjy1Xaq6zsxpXaJ/0-2gnail-neon-aurora-pigement-Unicorn-Nail-Powder-Mermaid-Nail-Art-Chrome-Pigment-Manicure-Decorations-in.jpg","https://ae01.alicdn.com/kf/HTB1Dx7fcLfM8KJjSZPfq6zklXXaN/0-2gnail-neon-aurora-pigement-Unicorn-Nail-Powder-Mermaid-Nail-Art-Chrome-Pigment-Manicure-Decorations-in.jpg","https://ae01.alicdn.com/kf/HTB11Y22h4rI8KJjy0Fpq6z5hVXaZ/0-2gnail-neon-aurora-pigement-Unicorn-Nail-Powder-Mermaid-Nail-Art-Chrome-Pigment-Manicure-Decorations-in.jpg","https://ae01.alicdn.com/kf/HTB12FQxXTwKL1JjSZFgq6z6aVXaJ/0-2gnail-neon-aurora-pigement-Unicorn-Nail-Powder-Mermaid-Nail-Art-Chrome-Pigment-Manicure-Decorations-in.jpg"];window.runParams.mainBigPic = "https://ae01.alicdn.com/kf/HTB1cC8TSXXXXXcMaXXXq6xXFXXXW/0-2gnail-neon-aurora-pigement-Unicorn-Nail-Powder-Mermaid-Nail-Art-Chrome-Pigment-Manicure-Decorations-in.jpg";'
-         # #m = re.match(r'who(.*?)thereis', 'who you are,what you do,When you get get there? What is time you state thereis?')
-         # m = re.search(r'imageBigViewURL=\[(.*?)\]\;', test1)
-         # print('---------------')
-         # #print "m.string:", m.string
-         # print(m.group(1))
-         # pass
-         # exit
          pathList={'body':'//*[@id="list-items"]/ul/li','body_2':'//*[@id="node-gallery"]/div[5]/div/div/ul/li'}
          #body=response.body.decode('utf-8','ignore')
-         #bodyList=Selector(text=body).xpath(pathList['body']).extract()
          bodyList=response.selector.xpath(pathList['body_2']).extract()
-         # f = open("text14.txt",'a')
-         # #f.write(body+'\n')
-         # for p in bodyList:
-         #     print('------------------')
-         #     try:
-         #         #url=Selector(text=p).xpath('//div/div[1]/div/a/@href').extract()[0]
-         #         url=Selector(text=p).xpath('//div[1]/div[1]/a/@href').extract()[0]
-         #         #//*[@id="node-gallery"]/div[5]/div/div/ul/li[1]/div[1]/div[1]/a
-         #         f.write('-------------------------')
-         #         f.write(url+'\n')
-         #     except:
-         #        print '-----code error'
-         #
-         # f.close()
-
          if(bodyList and self._page<2):
              self._page+=1
              for index,value in enumerate(bodyList):
                  try:
                      url=Selector(text=value).xpath('//div[1]/div[1]/a/@href').extract()[0]
                      _url='https:'+url
-                     f = open("text15.txt",'a')
-                     f.write(_url+'\n')
                      yield scrapy.Request(url=_url,callback=self.page)
                  except:
-                     f.close()
+                      print('parse is error')
 
              #
              # _url='https://www.yindou.com/zhaiquangoumai/?page='+str(self._page)+'&total=2802&rate=0&guarantee_id_code=&leftday=0&backday=0'
@@ -106,10 +60,6 @@ class smt(scrapy.Spider):
              # yield bodyList
 
      def page(self,response):
-         if response.status in self.handle_httpstatus_list:
-            print("maincoming page is wrong!")
-            pass
-         else:
              pathList={'title':'//*[@id="j-product-detail-bd"]/div[1]/div/h1/text()',
                        'lowPrice':'//*[@id="j-sku-discount-price"]/span[1]/text()',
                        'hightPrice':'//*[@id="j-sku-discount-price"]/span[2]/text()',
@@ -117,40 +67,63 @@ class smt(scrapy.Spider):
                        'scriptBigImg':'//*[@id="j-detail-gallery-main"]/script/text()',#幻灯片大图
                        'scriptMainImg':'//*[@id="j-detail-gallery-main"]/script/text()',#幻灯片主图
                        'contents':'//*[@id="j-product-description"]/div[2]/div/text()',
+                       'orders':'//*[@id="j-order-num"]'
                        }
              item=smtconfig()
              title=response.selector.xpath(pathList['title']).extract()[0]
              item['title']=title.encode('utf-8')
-             #write=''
              try:
                  lowPrice=response.selector.xpath(pathList['lowPrice']).extract()[0]
                  item['lowPrice']=float(lowPrice.encode('utf-8'))
                  item['hightPrice']=hightPrice=float(response.selector.xpath(pathList['hightPrice']).extract()[0].encode('utf-8'))
                  item['disCountPrice']=0.00
-                 #write=title+lowPrice+'__'+hightPrice+'__'+'\n'
              except:
                  item['disCountPrice']=disCountPrice=float(response.selector.xpath(pathList['disCountPrice']).extract()[0].encode('utf-8'))
                  item['lowPrice']=0.00
                  item['hightPrice']=0.00
-                 #write=title+disCountPrice+'\n'
              scriptBigImg=response.selector.xpath(pathList['scriptBigImg']).extract()[0].replace('\r','').replace('\n','').replace('\t','')
-             item['scriptBigImg']=_scriptBigImg= re.search(r'imageBigViewURL=\[(.*?)\]\;',scriptBigImg).group(1).encode('utf-8')#主图幻灯
-             item['scriptMainImg']=_scriptBigMainImg= re.search(r'mainBigPic = (.*?)\;',scriptBigImg).group(1).encode('utf-8')#主图
-             #item['contents']=contents= response.selector.xpath(pathList['contents']).extract()[0]#内容
-             #print(contents)
-             # buyRecordList=response.selector.xpath(pathList['bidlist']).extract()
-             # for index,value in enumerate(buyRecordList):
-             #       user_name=Selector(text=value).xpath('//div/span[1]/text()').extract()[0]
-             #       _user_bid_price=Selector(text=value).xpath('//div/span[2]/text()').re('(\d+\.\d+)|(\d+)')
-             #       user_bid_price=_user_bid_price[0] if _user_bid_price[0] else _user_bid_price[1]
-             #       user_buy_time=Selector(text=value).xpath('//div/span[3]/text()').extract()[0]
-             #       recordList.append({'user_bid_price':user_bid_price,'user_name':user_name,'user_buy_time':self.timeTostring(user_buy_time,2),'pro_id':item['pro_id']})
-             # item['user_record_list']=recordList
+             item['scriptBigImg']=_scriptBigImg= re.search(r'imageBigViewURL=\[(.*?)\]\;',scriptBigImg).group(1).encode('utf-8').strip('"')#主图幻灯
+             item['scriptMainImg']=_scriptBigMainImg= re.search(r'mainBigPic = (.*?)\;',scriptBigImg).group(1).encode('utf-8').strip('"')#主图
+             item['itemSpecifics']=self.specifics(response.body)
+             item['itemSku']=self.sku(response.body)
+             item['orders']=orders=re.compile('\d+').findall(response.selector.xpath(pathList['orders']).extract()[0])[0].encode('utf-8')
+             item['originalUrl']=response.url
              yield item
-             # body=response.body.decode('utf-8','ignore')
-             # f = open("text14.txt",'a')
-             # f.write(body+'\n')
-             # f.close()
+
+
+     def specifics(self,response):
+         total={}
+         speciRule={'div':'//*[@id="j-product-desc"]/div[1]/div[2]/ul/li','spKey':'//span[2]/text()','spValue':'//span[1]/text()'}
+         ifSpecis=bool(Selector(text=response).xpath(speciRule['div']).extract())
+         if(ifSpecis):
+             for value in Selector(text=response).xpath(speciRule['div']).extract():
+                 spkey=Selector(text=value).xpath(speciRule['spKey']).extract()[0]
+                 spValue=Selector(text=value).xpath(speciRule['spValue']).extract()[0]
+                 total.setdefault(spValue,spkey)
+             return json.dumps(total)
+
+
+     def sku(self,response):
+         # //*[@id="j-product-info-sku"]
+         # //*[@id="j-sku-list-1"]
+         # //*[@id="j-sku-list-2"]
+          regRules={'sku':'//*[@id="j-product-info-sku"]/dl','sku_name':'//dt/text()','sku_value':'//dd/ul/li','sku_a_attr':'//a/@title','sku_span_attr':'//a/span/text()'}
+          ifSku=bool(Selector(text=response).xpath(regRules['sku']).extract())
+          total={}
+          lskuName={}
+          if(ifSku==True):
+              for value in Selector(text=response).xpath(regRules['sku']).extract():
+                  skuAttr=''
+                  skuName=Selector(text=value).xpath(regRules['sku_name']).extract()[0]
+                  lskuName[skuName]=[]
+                  for liValue in Selector(text=value).xpath(regRules['sku_value']).extract():
+                      if(bool(Selector(text=liValue).xpath(regRules['sku_a_attr']).extract())):
+                          skuAttr=Selector(text=liValue).xpath(regRules['sku_a_attr']).extract()[0]
+                      else:
+                          skuAttr=Selector(text=liValue).xpath(regRules['sku_span_attr']).extract()[0]
+                      lskuName[skuName].append(skuAttr)
+                  total.update(lskuName)
+              return json.dumps(total)
 
      def timeTostring(self,_time,type=1):
          """

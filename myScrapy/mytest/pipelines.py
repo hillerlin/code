@@ -76,8 +76,8 @@ class MySQLStorePipeline(object):
         print('--------end')
         #conn.execute("""insert into `yindouwang_project`(`pro_name`,`pro_id`) VALUES ('%s',%d) """%('aaaa',9090))
         conn.execute("""
-                     insert into `smt`(`title`,`low_price`,`hight_price`,`dis_count_price`,`script_main_img`,`script_big_img`) VALUES ('%s',%f,%f,%f,'%s','%s')
-                     """%(item['title'],item['lowPrice'],item['hightPrice'],item['disCountPrice'],item['scriptMainImg'],item['scriptBigImg']))
+                     insert into `smt`(`title`,`low_price`,`hight_price`,`dis_count_price`,`script_main_img`,`script_big_img`,`item_specifics`,`item_sku`,`orders`,`original_url`) VALUES ('%s',%f,%f,%f,'%s','%s','%s','%s','%s','%s')
+                     """%(item['title'],item['lowPrice'],item['hightPrice'],item['disCountPrice'],item['scriptMainImg'],item['scriptBigImg'],item['itemSpecifics'],item['itemSku'],item['orders'],item['originalUrl']))
     #获取url的md5编码
     def _get_linkmd5id(self, item):
             #url进行md5处理，为避免重复采集设计

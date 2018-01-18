@@ -20,9 +20,15 @@ class ValidityTester(object):
         self._raw_proxies = None
         self._usable_proxies = []
 
+
     def set_raw_proxies(self, proxies):
         self._raw_proxies = proxies
         self._conn = RedisClient()
+
+    def set_timing_params(self):
+        self._conn = RedisClient()
+        self._all_ips_item=self._conn.getAll() #把现在所有的ip列表都拿出来做检查
+        self._post_url=ALIE_API
 
     async def test_single_proxy(self, proxy):
         """
@@ -52,10 +58,44 @@ class ValidityTester(object):
         print('ValidityTester is working')
         try:
             loop = asyncio.get_event_loop()
-            tasks = [self.test_single_proxy(proxy) for proxy in self._raw_proxies]
+            tasks = [self.test_single_proxy(proxy) for proxy in self._raw_proxies]#test_single_proxy  检验ip是否有效
             loop.run_until_complete(asyncio.wait(tasks))
+            #loop.run_until_complete(asyncio.gather(self.test_single_proxy(proxy) for proxy in self._raw_proxies))
         except ValueError:
             print('Async Error')
+
+    async def TimingCheckFunction(self,proxy):
+        try:
+            async with aiohttp.ClientSession() as session:
+                try:
+                    if isinstance(proxy,bytes):#bytes=str
+                        proxy=proxy.decode('utf-8')
+                    real_proxy='http://'+proxy
+                    print('Timing Check Async Ip:'+str(proxy))
+                    async with session.get(self._post_url, proxy=real_proxy, timeout=get_proxy_timeout) as response:
+                        if(response.status!=200):
+                            self._conn.delete(proxy)
+                            print('Delete Old Invalid Proxy',proxy)
+                        else:
+                            print('Keep Save IP',proxy)
+                            print('keep status',response.status)
+                except (ProxyConnectionError, TimeoutError, ValueError):
+                    print('Foreach Delete Invalid Proxy Error', proxy)
+                    self._conn.delete(proxy)
+        except(ServerDisconnectedError, ClientResponseError,ClientConnectorError) as s:
+            print('-------')
+            print(s)
+            self._conn.delete(proxy)
+            pass
+
+    def TimingCheck(self):
+        try:
+            loop = asyncio.get_event_loop()
+            tasks = [self.TimingCheckFunction(proxy) for proxy in self._all_ips_item]#test_single_proxy  检验ip是否有效
+            loop.run_until_complete(asyncio.wait(tasks))
+        except ValueError:
+            print('Timing Check Error')
+
 
 
 class PoolAdder(object):
@@ -86,8 +126,8 @@ class PoolAdder(object):
                 callback = self._crawler.__CrawlFunc__[callback_label]
                 raw_proxies = self._crawler.get_raw_proxies(callback)
                 # test crawled proxies
-                self._tester.set_raw_proxies(raw_proxies)
-                self._tester.test()
+                self._tester.set_raw_proxies(raw_proxies)  #赋值
+                self._tester.test() #接着上一步的赋值检验ip
                 proxy_count += len(raw_proxies)
                 if self.is_over_threshold():
                     print('IP is enough, waiting to be used')
@@ -129,10 +169,22 @@ class Schedule(object):
             if conn.queue_len < lower_threshold:
                 adder.add_to_queue()
             time.sleep(cycle)
+    @staticmethod
+    def timingCheck(cycle=TIMING_CHECK):
+        conn = RedisClient()
+        valiClass=ValidityTester()
+        while True:
+               if conn.queue_len>0:
+                   valiClass.set_timing_params()
+                   valiClass.TimingCheck()
+               time.sleep(cycle)
+
 
     def run(self):
         print('Ip processing running')
         valid_process = Process(target=Schedule.valid_proxy)
         check_process = Process(target=Schedule.check_pool)
+        timing_check_process=Process(target=Schedule.timingCheck)
         valid_process.start()
         check_process.start()
+        timing_check_process.start()

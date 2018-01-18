@@ -14,7 +14,7 @@ class RedisClient(object):
         """
         get proxies from redis
         """
-        proxies = self._db.lrange("proxies", 0, count - 1)
+        proxies = self._db.lrange("proxies", 0, - 1)
         self._db.ltrim("proxies", count, -1)
         return proxies
 

@@ -61,6 +61,10 @@ class smtconfig(scrapy.Item):
     scriptBigImg=scrapy.Field();
     scriptMainImg=scrapy.Field();
     contents=scrapy.Field();
+    itemSpecifics=scrapy.Field();
+    itemSku=scrapy.Field();
+    orders=scrapy.Field();
+    originalUrl=scrapy.Field();
 
 
 
