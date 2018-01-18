@@ -75,9 +75,23 @@ class MySQLStorePipeline(object):
         print(item)
         print('--------end')
         #conn.execute("""insert into `yindouwang_project`(`pro_name`,`pro_id`) VALUES ('%s',%d) """%('aaaa',9090))
-        conn.execute("""
-                     insert into `smt`(`title`,`low_price`,`hight_price`,`dis_count_price`,`script_main_img`,`script_big_img`,`item_specifics`,`item_sku`,`orders`,`original_url`) VALUES ('%s',%f,%f,%f,'%s','%s','%s','%s','%s','%s')
-                     """%(item['title'],item['lowPrice'],item['hightPrice'],item['disCountPrice'],item['scriptMainImg'],item['scriptBigImg'],item['itemSpecifics'],item['itemSku'],item['orders'],item['originalUrl']))
+        if(len(item['skuKey'])>0):
+            for ii in item['skuKey']:
+                if(len(item['skuValue'])>0):
+                    for iii in item['skuValue']:
+                        conn.execute("""
+                     insert into `smt`(`title`,`low_price`,`hight_price`,`dis_count_price`,`script_main_img`,`script_big_img`,`item_specifics`,`item_sku`,`orders`,`original_url`,`sku_img_list`,`sku_key`,`sku_value`,`object_id`) VALUES ('%s',%f,%f,%f,'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')
+                     """%(item['title'],item['lowPrice'],item['hightPrice'],item['disCountPrice'],item['scriptMainImg'],item['scriptBigImg'],item['itemSpecifics'],item['itemSku'],item['orders'],item['originalUrl'],item['itemBigPic'],ii,iii,item['objectId']))
+                else:
+                    conn.execute("""
+                     insert into `smt`(`title`,`low_price`,`hight_price`,`dis_count_price`,`script_main_img`,`script_big_img`,`item_specifics`,`item_sku`,`orders`,`original_url`,`sku_img_list`,`sku_key`,`object_id`) VALUES ('%s',%f,%f,%f,'%s','%s','%s','%s','%s','%s','%s','%s','%s')
+                     """%(item['title'],item['lowPrice'],item['hightPrice'],item['disCountPrice'],item['scriptMainImg'],item['scriptBigImg'],item['itemSpecifics'],item['itemSku'],item['orders'],item['originalUrl'],item['itemBigPic'],ii,item['objectId']))
+        else:
+            conn.execute("""
+                     insert into `smt`(`title`,`low_price`,`hight_price`,`dis_count_price`,`script_main_img`,`script_big_img`,`item_specifics`,`item_sku`,`orders`,`original_url`,`sku_img_list`,`object_id`) VALUES ('%s',%f,%f,%f,'%s','%s','%s','%s','%s','%s','%s','%s')
+                     """%(item['title'],item['lowPrice'],item['hightPrice'],item['disCountPrice'],item['scriptMainImg'],item['scriptBigImg'],item['itemSpecifics'],item['itemSku'],item['orders'],item['originalUrl'],item['itemBigPic'],item['objectId']))
+
+
     #获取url的md5编码
     def _get_linkmd5id(self, item):
             #url进行md5处理，为避免重复采集设计

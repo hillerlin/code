@@ -65,6 +65,11 @@ class smtconfig(scrapy.Item):
     itemSku=scrapy.Field();
     orders=scrapy.Field();
     originalUrl=scrapy.Field();
+    itemBigPic=scrapy.Field();
+    skuJoinKeyAndValue=scrapy.Field();
+    skuKey=scrapy.Field();
+    skuValue=scrapy.Field();
+    objectId=scrapy.Field();
 
 
 

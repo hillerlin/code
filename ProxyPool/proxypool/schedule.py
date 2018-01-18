@@ -11,6 +11,8 @@ from proxypool.error import ResourceDepletionError
 from proxypool.getter import FreeProxyGetter
 from proxypool.setting import *
 from asyncio import TimeoutError
+from .agents import AGENTS
+from random import choice
 
 
 class ValidityTester(object):
@@ -71,21 +73,21 @@ class ValidityTester(object):
                     if isinstance(proxy,bytes):#bytes=str
                         proxy=proxy.decode('utf-8')
                     real_proxy='http://'+proxy
+                    headers = {'User-Agent':choice(AGENTS)}
                     print('Timing Check Async Ip:'+str(proxy))
-                    async with session.get(self._post_url, proxy=real_proxy, timeout=get_proxy_timeout) as response:
+                    async with session.get(self._post_url, proxy=real_proxy, timeout=get_proxy_timeout,headers=headers) as response:
                         if(response.status!=200):
                             self._conn.delete(proxy)
                             print('Delete Old Invalid Proxy',proxy)
                         else:
                             print('Keep Save IP',proxy)
-                            print('keep status',response.status)
                 except (ProxyConnectionError, TimeoutError, ValueError):
                     print('Foreach Delete Invalid Proxy Error', proxy)
                     self._conn.delete(proxy)
         except(ServerDisconnectedError, ClientResponseError,ClientConnectorError) as s:
             print('-------')
             print(s)
-            self._conn.delete(proxy)
+            #self._conn.delete(proxy)
             pass
 
     def TimingCheck(self):
@@ -169,7 +171,7 @@ class Schedule(object):
             if conn.queue_len < lower_threshold:
                 adder.add_to_queue()
             time.sleep(cycle)
-    @staticmethod
+
     def timingCheck(cycle=TIMING_CHECK):
         conn = RedisClient()
         valiClass=ValidityTester()
