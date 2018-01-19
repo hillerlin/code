@@ -9,7 +9,7 @@ PASSWORD = 'lmj4282887'
 get_proxy_timeout = 9
 
 # 代理池数量界限
-POOL_LOWER_THRESHOLD = 100
+POOL_LOWER_THRESHOLD = 200
 POOL_UPPER_THRESHOLD = 600
 
 # 检查周期

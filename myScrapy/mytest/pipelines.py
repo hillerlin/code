@@ -71,25 +71,35 @@ class MySQLStorePipeline(object):
         #     conn.execute("""
         #     insert into `yindouwang_user_record` (`user_name`,`user_bid_price`,`user_buy_time`,`pro_id`) VALUES
         #     ('%s','%s','%s','%s')"""%(value['user_name'],value['user_bid_price'],value['user_buy_time'],value['pro_id']))
-        print('--------begin')
+        print('--------begin--------')
         print(item)
-        print('--------end')
+        print('--------end----------')
         #conn.execute("""insert into `yindouwang_project`(`pro_name`,`pro_id`) VALUES ('%s',%d) """%('aaaa',9090))
         if(len(item['skuKey'])>0):
-            for ii in item['skuKey']:
-                if(len(item['skuValue'])>0):
-                    for iii in item['skuValue']:
+            try:
+                for ii in item['skuKey']:
+                    if(len(item['skuValue'])>0):
+                        for iii in item['skuValue']:
+                            conn.execute("""
+                         insert into `smt`(`title`,`low_price`,`hight_price`,`dis_count_price`,`script_main_img`,`script_big_img`,`item_specifics`,`item_sku`,`orders`,`original_url`,`sku_img_list`,`sku_key`,`sku_value`,`object_id`) VALUES ('%s',%f,%f,%f,'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')
+                         """%(MySQLdb.escape_string(item['title']),item['lowPrice'],item['hightPrice'],item['disCountPrice'],item['scriptMainImg'],item['scriptBigImg'],MySQLdb.escape_string(item['itemSpecifics']),MySQLdb.escape_string(item['itemSku']),item['orders'],item['originalUrl'],item['itemBigPic'],ii,iii,item['objectId']))
+
+                    else:
                         conn.execute("""
-                     insert into `smt`(`title`,`low_price`,`hight_price`,`dis_count_price`,`script_main_img`,`script_big_img`,`item_specifics`,`item_sku`,`orders`,`original_url`,`sku_img_list`,`sku_key`,`sku_value`,`object_id`) VALUES ('%s',%f,%f,%f,'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')
-                     """%(item['title'],item['lowPrice'],item['hightPrice'],item['disCountPrice'],item['scriptMainImg'],item['scriptBigImg'],item['itemSpecifics'],item['itemSku'],item['orders'],item['originalUrl'],item['itemBigPic'],ii,iii,item['objectId']))
-                else:
-                    conn.execute("""
-                     insert into `smt`(`title`,`low_price`,`hight_price`,`dis_count_price`,`script_main_img`,`script_big_img`,`item_specifics`,`item_sku`,`orders`,`original_url`,`sku_img_list`,`sku_key`,`object_id`) VALUES ('%s',%f,%f,%f,'%s','%s','%s','%s','%s','%s','%s','%s','%s')
-                     """%(item['title'],item['lowPrice'],item['hightPrice'],item['disCountPrice'],item['scriptMainImg'],item['scriptBigImg'],item['itemSpecifics'],item['itemSku'],item['orders'],item['originalUrl'],item['itemBigPic'],ii,item['objectId']))
+                         insert into `smt`(`title`,`low_price`,`hight_price`,`dis_count_price`,`script_main_img`,`script_big_img`,`item_specifics`,`item_sku`,`orders`,`original_url`,`sku_img_list`,`sku_key`,`object_id`) VALUES ('%s',%f,%f,%f,'%s','%s','%s','%s','%s','%s','%s','%s','%s')
+                         """%(MySQLdb.escape_string(item['title']),item['lowPrice'],item['hightPrice'],item['disCountPrice'],item['scriptMainImg'],item['scriptBigImg'],MySQLdb.escape_string(item['itemSpecifics']),MySQLdb.escape_string(item['itemSku']),item['orders'],item['originalUrl'],item['itemBigPic'],ii,item['objectId']))
+
+            except Exception:
+                print('mysql error----',Exception)
+
         else:
-            conn.execute("""
-                     insert into `smt`(`title`,`low_price`,`hight_price`,`dis_count_price`,`script_main_img`,`script_big_img`,`item_specifics`,`item_sku`,`orders`,`original_url`,`sku_img_list`,`object_id`) VALUES ('%s',%f,%f,%f,'%s','%s','%s','%s','%s','%s','%s','%s')
-                     """%(item['title'],item['lowPrice'],item['hightPrice'],item['disCountPrice'],item['scriptMainImg'],item['scriptBigImg'],item['itemSpecifics'],item['itemSku'],item['orders'],item['originalUrl'],item['itemBigPic'],item['objectId']))
+            try:
+                conn.execute("""
+                         insert into `smt`(`title`,`low_price`,`hight_price`,`dis_count_price`,`script_main_img`,`script_big_img`,`item_specifics`,`item_sku`,`orders`,`original_url`,`sku_img_list`,`object_id`) VALUES ('%s',%f,%f,%f,'%s','%s','%s','%s','%s','%s','%s','%s')
+                         """%(MySQLdb.escape_string(item['title']),item['lowPrice'],item['hightPrice'],item['disCountPrice'],item['scriptMainImg'],item['scriptBigImg'],MySQLdb.escape_string(item['itemSpecifics']),MySQLdb.escape_string(item['itemSku']),item['orders'],item['originalUrl'],item['itemBigPic'],item['objectId']))
+            except Exception:
+                print('mysql error----',Exception)
+
 
 
     #获取url的md5编码

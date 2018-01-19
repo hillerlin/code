@@ -1,6 +1,7 @@
 import redis
 from .error import PoolEmptyError
 from .settings import REDIS_HOST, REDIS_PORT, REDIS_PASSWORD
+import random
 
 
 class RedisClient(object):
@@ -14,7 +15,7 @@ class RedisClient(object):
         """
         get proxies from redis
         """
-        proxies = self._db.lrange("proxies", 0, - 1)
+        proxies = self._db.lrange("proxies", 0, -1)
         self._db.ltrim("proxies", count, -1)
         return proxies
 
@@ -30,6 +31,14 @@ class RedisClient(object):
         """
         try:
             return self._db.rpop("proxies").decode('utf-8')
+        except:
+            raise PoolEmptyError
+
+    def randomChoic(self,index=1):
+        count=self._db.llen("proxies")-1
+        try:
+            _count=random.randint(0,count)
+            return self._db.lrange("proxies", _count, _count)[0].decode('utf-8')
         except:
             raise PoolEmptyError
 

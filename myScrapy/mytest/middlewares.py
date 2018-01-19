@@ -72,12 +72,13 @@ class JavaScriptMiddleware(object):
         return s
 
     def process_request(self, request, spider):
-        proxies = self.conn.pop()
+        proxies = self.conn.randomChoic()
         agent = choice(AGENTS)
         request.headers['User-Agent'] = agent
         if proxies:
             print('proxy is working ip:'+str(proxies))
             request.meta['proxy'] = "http://"+proxies
+            #request.meta['proxy'] = "http://119.123.79.34:80"
     def process_response(self,request, response, spider):
         if response.status == 200:
             print "PhantomJS is starting..."
