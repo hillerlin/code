@@ -42,7 +42,7 @@ CONCURRENT_REQUESTS_PER_IP = 16
 COOKIES_ENABLED = True
 
 #日志级别
-# LOG_LEVEL = 'ERROR'
+LOG_LEVEL = 'ERROR'
 
 # Disable Telnet Console (enabled by default)
 #TELNETCONSOLE_ENABLED = False

@@ -32,17 +32,6 @@ class smt(scrapy.Spider):
                                callback=self.page)
 
 
-     def getProxy(self):
-        # 这里填写无忧代理IP提供的API订单号（请到用户中心获取）
-        order = "d168f83eca5a334b2e30fa051bf424f0";
-        # 获取IP的API接口
-        apiUrl = "http://api.ip.data5u.com/dynamic/get.html?order=" + order;
-        # 获取IP列表
-        res = urllib.urlopen(apiUrl).read().strip("\n");
-        # 按照\n分割获取到的IP
-        ips = res.split("\n");
-        return str(ips[0])
-
      def parse(self,response):
          pathList={'body':'//*[@id="list-items"]/ul/li','body_2':'//*[@id="node-gallery"]/div[5]/div/div/ul/li'}
          #body=response.body.decode('utf-8','ignore')
